@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Reference Room — Curated Timepieces</title>
+<meta name="description" content="Portfolio demo: a luxury watch marketplace with a working cart. Nothing is for sale." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='11' fill='none' stroke='%231B1A18' stroke-width='2.5'/><line x1='16' y1='16' x2='16' y2='8' stroke='%231B1A18' stroke-width='2'/><line x1='16' y1='16' x2='22' y2='16' stroke='%231B1A18' stroke-width='2'/></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+<style>
+/* =========================================================
+   THE REFERENCE ROOM — quiet luxury
+   Porcelain ground, ink type, hairline rules.
+   One reserved accent (vitrine green) for function only.
+   Signature kept: every watch runs on the real time.
+   ========================================================= */
+:root{
+  --bg:#F8F7F4;
+  --surface:#FDFDFB;
+  --ink:#1B1A18;
+  --muted:#8B867B;
+  --hair:#E6E3DB;
+  --hair-dark:#CDC9BE;
+  --green:#2E4B3C;
+  --serif:'EB Garamond',Garamond,Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6}
+::selection{background:var(--ink);color:var(--bg)}
+button{font-family:var(--sans);cursor:pointer}
+a{color:var(--ink)}
+button:focus-visible,a:focus-visible{outline:1.5px solid var(--green);outline-offset:3px}
+
+/* ---------- nav ---------- */
+nav{
+  position:sticky;top:0;z-index:40;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:18px 26px;background:rgba(248,247,244,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--hair);
+}
+.wordmark{font-family:var(--serif);font-weight:600;font-size:18px;
+  letter-spacing:.05em;color:var(--ink);text-decoration:none}
+.cart-link{
+  background:none;border:0;color:var(--ink);font-size:13px;letter-spacing:.06em;
+  padding:6px 2px;border-bottom:1px solid transparent;transition:border-color .25s;
+}
+.cart-link:hover{border-bottom-color:var(--ink)}
+
+/* ---------- hero ---------- */
+.hero{text-align:center;padding:88px 24px 36px;max-width:680px;margin:0 auto}
+.kicker{font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+h1{font-family:var(--serif);font-weight:500;font-size:clamp(30px,5vw,46px);line-height:1.22;letter-spacing:.005em}
+.hero p{color:var(--muted);margin-top:16px;font-size:16.5px}
+.demo-note{display:block;margin-top:22px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.12em;color:var(--muted)}
+
+/* ---------- filters ---------- */
+.filters{display:flex;gap:28px;flex-wrap:wrap;justify-content:center;padding:30px 20px 4px}
+.fbtn{
+  background:none;border:0;color:var(--muted);font-size:12.5px;letter-spacing:.08em;
+  padding:0 0 5px;border-bottom:1px solid transparent;transition:color .25s,border-color .25s;
+}
+.fbtn:hover{color:var(--ink)}
+.fbtn.on{color:var(--ink);border-bottom-color:var(--ink)}
+
+/* ---------- grid ---------- */
+.grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));
+  gap:52px 30px;max-width:1160px;margin:0 auto;padding:44px 26px 110px;
+}
+.item{text-align:center}
+.watch{
+  width:150px;height:180px;
+  filter:drop-shadow(0 18px 14px rgba(27,26,24,.13));
+  transition:transform .35s ease;
+}
+.item:hover .watch{transform:translateY(-4px)}
+.brand{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-top:18px}
+.model{font-family:var(--serif);font-weight:500;font-size:20px;margin-top:8px;line-height:1.3}
+.ref{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--muted);margin-top:5px}
+.price{font-size:14px;margin-top:10px;font-variant-numeric:tabular-nums}
+.add{
+  margin-top:16px;background:transparent;border:1px solid var(--hair-dark);
+  color:var(--ink);padding:10px 24px;font-size:11.5px;letter-spacing:.14em;
+  text-transform:uppercase;transition:background .25s,color .25s,border-color .25s;
+}
+.add:hover{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.add.done{background:var(--green);border-color:var(--green);color:#fff}
+
+/* ---------- cart drawer ---------- */
+.overlay{
+  position:fixed;inset:0;background:rgba(27,26,24,.28);z-index:60;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.overlay.open{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:min(400px,94vw);z-index:70;
+  background:var(--surface);border-left:1px solid var(--hair);
+  transform:translateX(102%);transition:transform .38s cubic-bezier(.3,.9,.3,1);
+  display:flex;flex-direction:column;
+}
+.drawer.open{transform:none}
+.drawer-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:20px 22px;border-bottom:1px solid var(--hair);
+}
+.drawer-head h2{font-family:var(--serif);font-weight:500;font-size:21px}
+.x{background:none;border:0;color:var(--muted);font-size:22px;line-height:1;padding:4px 8px}
+.x:hover{color:var(--ink)}
+.drawer-body{flex:1;overflow-y:auto;padding:6px 22px}
+.line-item{
+  display:flex;justify-content:space-between;gap:12px;align-items:flex-start;
+  padding:18px 0;border-bottom:1px solid var(--hair);
+}
+.li-name{font-family:var(--serif);font-size:16.5px}
+.li-ref{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px}
+.li-price{font-size:12.5px;color:var(--muted);margin-top:7px;font-variant-numeric:tabular-nums}
+.qty{display:flex;align-items:center;gap:10px;margin-top:10px}
+.qty button{
+  width:25px;height:25px;border:1px solid var(--hair-dark);background:transparent;
+  color:var(--ink);font-size:14px;
+}
+.qty button:hover{border-color:var(--ink)}
+.qty span{font-size:13px;min-width:16px;text-align:center;font-variant-numeric:tabular-nums}
+.remove{background:none;border:0;color:var(--muted);font-size:11px;letter-spacing:.06em;
+  padding:2px 0;margin-top:10px;border-bottom:1px solid transparent}
+.remove:hover{color:var(--ink);border-bottom-color:var(--ink)}
+.li-amt{font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cart-empty{color:var(--muted);text-align:center;padding:64px 10px;font-family:var(--serif);font-style:italic;font-size:17px}
+.drawer-foot{border-top:1px solid var(--hair);padding:18px 22px 24px}
+.subtotal{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.subtotal .lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.subtotal .amt{font-size:19px;font-variant-numeric:tabular-nums}
+.checkout{
+  width:100%;background:var(--ink);border:1px solid var(--ink);color:var(--bg);
+  padding:14px;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
+  transition:opacity .25s;
+}
+.checkout:hover{opacity:.85}
+.checkout[disabled]{opacity:.35;cursor:not-allowed}
+.foot-note{font-family:var(--mono);font-size:9.5px;color:var(--muted);
+  letter-spacing:.1em;text-align:center;margin-top:11px}
+
+/* ---------- checkout modal ---------- */
+.modal-wrap{
+  position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;
+  padding:18px;opacity:0;pointer-events:none;transition:opacity .3s;background:rgba(27,26,24,.32);
+}
+.modal-wrap.open{opacity:1;pointer-events:auto}
+.modal{
+  background:var(--surface);border:1px solid var(--hair);width:min(440px,100%);
+  padding:28px 26px;
+}
+.modal h3{font-family:var(--serif);font-weight:500;font-size:23px;margin-bottom:16px}
+.sum-line{display:flex;justify-content:space-between;font-size:14px;padding:8px 0;
+  border-bottom:1px solid var(--hair)}
+.sum-line span:last-child{font-variant-numeric:tabular-nums}
+.sum-total{display:flex;justify-content:space-between;margin-top:15px;font-weight:600}
+.sum-total span:last-child{font-size:17px;font-variant-numeric:tabular-nums}
+.modal .checkout{margin-top:22px}
+.modal .ghost{
+  width:100%;margin-top:10px;background:transparent;border:1px solid var(--hair-dark);
+  color:var(--muted);padding:12px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+}
+.modal .ghost:hover{color:var(--ink);border-color:var(--ink)}
+.success{text-align:center;padding:12px 4px 4px}
+.success .mark{
+  width:54px;height:54px;border-radius:50%;border:1px solid var(--green);
+  color:var(--green);font-size:24px;display:flex;align-items:center;justify-content:center;
+  margin:0 auto 18px;
+}
+.success p{color:var(--muted);margin-top:8px;font-size:14px}
+
+footer{
+  border-top:1px solid var(--hair);padding:28px 22px 46px;text-align:center;
+  color:var(--muted);font-size:13px;
+}
+footer a{color:var(--muted)}
+footer a:hover{color:var(--ink)}
+footer .fm{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;margin-top:9px}
+
+@media (prefers-reduced-motion: reduce){
+  .drawer,.overlay,.watch,.add,.fbtn{transition:none}
+  .item:hover .watch{transform:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="wordmark" href="#top">The Reference Room</a>
+  <button class="cart-link" id="cartOpen" aria-label="Open cart">Cart — <span id="count">0</span></button>
+</nav>
+
+<header class="hero" id="top">
+  <p class="kicker">Curated Timepieces</p>
+  <h1>Serious watches,<br/>chosen by reference.</h1>
+  <p>A small case of dive, dress, and tool pieces — selected by reference number, not by hype.</p>
+  <span class="demo-note">PORTFOLIO DEMO · NOTHING IS FOR SALE · NOTHING IS CHARGED</span>
+</header>
+
+<div class="filters" id="filters" role="group" aria-label="Filter by brand"></div>
+
+<main class="grid" id="grid"></main>
+
+<!-- ---------- cart ---------- -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-label="Shopping cart">
+  <div class="drawer-head">
+    <h2>Your Case</h2>
+    <button class="x" id="cartClose" aria-label="Close cart">×</button>
+  </div>
+  <div class="drawer-body" id="cartBody"></div>
+  <div class="drawer-foot">
+    <div class="subtotal">
+      <span class="lbl">Subtotal</span>
+      <span class="amt" id="subtotal">$0.00</span>
+    </div>
+    <button class="checkout" id="checkoutBtn" disabled>Proceed to Checkout</button>
+    <div class="foot-note">DEMO CART — HELD IN MEMORY FOR THIS VISIT</div>
+  </div>
+</aside>
+
+<!-- ---------- checkout modal ---------- -->
+<div class="modal-wrap" id="modalWrap">
+  <div class="modal" id="modal"></div>
+</div>
+
+<footer>
+  The Reference Room is a portfolio demonstration built by Deyton Dickson.<br/>
+  <a href="index.html">← back to the portfolio</a>
+  <div class="fm">ALL BRAND AND MODEL NAMES BELONG TO THEIR OWNERS · NO AFFILIATION · NO SALES</div>
+</footer>
+
+<script>
+/* =====================================================
+   CATALOG — edit prices/refs freely; it's just data.
+   dial: dial color · bezel: smooth | dive | tachy | fluted
+   accent: seconds-hand color · chrono: subdials on/off
+   ===================================================== */
+const PRODUCTS = [
+  { id:"exp",  brand:"Rolex",       model:"Explorer 36",             ref:"124270",                 price:7950,  dial:"#111318", bezel:"smooth", accent:"#e8e5dd", chrono:false },
+  { id:"sub",  brand:"Rolex",       model:"Submariner",              ref:"124060",                 price:10250, dial:"#0c0e12", bezel:"dive",   accent:"#e8e5dd", chrono:false },
+  { id:"dj",   brand:"Rolex",       model:"Datejust 36",             ref:"126234",                 price:9400,  dial:"#1e3a5f", bezel:"fluted", accent:"#e8e5dd", chrono:false },
+  { id:"spd",  brand:"Omega",       model:"Speedmaster Professional",ref:"310.30.42.50.01.002",    price:6600,  dial:"#101114", bezel:"tachy",  accent:"#e8e5dd", chrono:true  },
+  { id:"sea",  brand:"Omega",       model:"Seamaster Diver 300M",    ref:"210.30.42.20.03.001",    price:5300,  dial:"#123a63", bezel:"dive",   accent:"#d84b3a", chrono:false },
+  { id:"bb58", brand:"Tudor",       model:"Black Bay 58",            ref:"M79030N-0001",           price:3950,  dial:"#0e0f12", bezel:"dive",   accent:"#c9ae72", chrono:false },
+  { id:"snow", brand:"Grand Seiko", model:"“Snowflake”",             ref:"SBGA211",                price:6200,  dial:"#e9ecef", bezel:"smooth", accent:"#3a6bb5", chrono:false },
+  { id:"mark", brand:"IWC",         model:"Pilot's Watch Mark XX",   ref:"IW328201",               price:5600,  dial:"#0d0f13", bezel:"smooth", accent:"#e8e5dd", chrono:false },
+];
+
+const money = n => "$" + n.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2});
+
+/* =====================================================
+   SVG WATCH — one drawing function, parameterized.
+   The hands are set to the real time by the loop below.
+   ===================================================== */
+function bezelSVG(type){
+  if (type === "dive") return `
+    <circle cx="100" cy="120" r="70" fill="#191c21" stroke="#3a3f47" stroke-width="1"/>
+    <g stroke="#8f948f" stroke-width="2">
+      ${Array.from({length:12},(_,i)=>{
+        const a=(i*30-90)*Math.PI/180, r1=62, r2=68;
+        return `<line x1="${100+r1*Math.cos(a)}" y1="${120+r1*Math.sin(a)}" x2="${100+r2*Math.cos(a)}" y2="${120+r2*Math.sin(a)}"/>`;
+      }).join("")}
+    </g>
+    <path d="M100,50 L106,62 L94,62 Z" fill="#c9ae72"/>`;
+  if (type === "tachy") return `
+    <circle cx="100" cy="120" r="70" fill="#15171b" stroke="#3a3f47" stroke-width="1"/>
+    <circle cx="100" cy="120" r="65" fill="none" stroke="#6a6f77" stroke-width="1.5"
+      stroke-dasharray="1.5 5.6"/>`;
+  if (type === "fluted") return `
+    <circle cx="100" cy="120" r="70" fill="none" stroke="#d8dade" stroke-width="9"
+      stroke-dasharray="3.5 3"/>`;
+  return `<circle cx="100" cy="120" r="70" fill="none" stroke="#c9ccd2" stroke-width="7"/>`;
+}
+
+function watchSVG(p){
+  const light = p.dial.startsWith("#e");
+  const idx = light ? "#5a5f66" : "#dfe2e6";
+  const hand = light ? "#2a2e34" : "#e8e5dd";
+  const indices = Array.from({length:12},(_,i)=>{
+    const a=(i*30-90)*Math.PI/180, r1=46, r2=(i%3===0)?36:41;
+    return `<line x1="${100+r1*Math.cos(a)}" y1="${120+r1*Math.sin(a)}"
+                  x2="${100+r2*Math.cos(a)}" y2="${120+r2*Math.sin(a)}"
+                  stroke="${idx}" stroke-width="${i%3===0?4:2.5}" stroke-linecap="round"/>`;
+  }).join("");
+  const chrono = p.chrono ? `
+    <circle cx="72" cy="120" r="13" fill="rgba(0,0,0,.35)" stroke="${idx}" stroke-width=".8"/>
+    <circle cx="128" cy="120" r="13" fill="rgba(0,0,0,.35)" stroke="${idx}" stroke-width=".8"/>
+    <circle cx="100" cy="148" r="13" fill="rgba(0,0,0,.35)" stroke="${idx}" stroke-width=".8"/>` : "";
+  return `
+  <svg class="watch" viewBox="0 0 200 240" role="img" aria-label="${p.brand} ${p.model}">
+    <defs>
+      <linearGradient id="case-${p.id}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#f0f2f5"/><stop offset=".5" stop-color="#9aa0aa"/>
+        <stop offset="1" stop-color="#d7dae0"/>
+      </linearGradient>
+      <radialGradient id="sheen-${p.id}" cx=".35" cy=".3" r="1">
+        <stop offset="0" stop-color="rgba(255,255,255,.20)"/>
+        <stop offset=".55" stop-color="rgba(255,255,255,0)"/>
+      </radialGradient>
+    </defs>
+    <!-- lugs + bracelet stubs -->
+    <path d="M78,6 L122,6 L114,36 L86,36 Z" fill="url(#case-${p.id})"/>
+    <path d="M78,234 L122,234 L114,204 L86,204 Z" fill="url(#case-${p.id})"/>
+    <line x1="84" y1="16" x2="116" y2="16" stroke="#7d838d" stroke-width="2"/>
+    <line x1="83" y1="26" x2="117" y2="26" stroke="#7d838d" stroke-width="2"/>
+    <line x1="84" y1="224" x2="116" y2="224" stroke="#7d838d" stroke-width="2"/>
+    <line x1="83" y1="214" x2="117" y2="214" stroke="#7d838d" stroke-width="2"/>
+    <!-- crown -->
+    <rect x="175" y="113" width="11" height="14" rx="3" fill="url(#case-${p.id})"/>
+    <!-- case, bezel, dial -->
+    <circle cx="100" cy="120" r="78" fill="url(#case-${p.id})"/>
+    ${bezelSVG(p.bezel)}
+    <circle cx="100" cy="120" r="58" fill="${p.dial}"/>
+    <circle cx="100" cy="120" r="58" fill="url(#sheen-${p.id})"/>
+    ${chrono}
+    ${indices}
+    <!-- hands: rotated to real time by JS -->
+    <g class="h-hand" data-c="100 120">
+      <rect x="97.5" y="86" width="5" height="36" rx="2.5" fill="${hand}"/>
+    </g>
+    <g class="m-hand" data-c="100 120">
+      <rect x="98.2" y="68" width="3.6" height="54" rx="1.8" fill="${hand}"/>
+    </g>
+    <g class="s-hand" data-c="100 120">
+      <rect x="99.3" y="62" width="1.4" height="72" rx=".7" fill="${p.accent}"/>
+    </g>
+    <circle cx="100" cy="120" r="4" fill="${p.accent}"/>
+    <circle cx="100" cy="120" r="1.6" fill="${p.dial}"/>
+  </svg>`;
+}
+
+/* =====================================================
+   RENDER: filters + grid
+   ===================================================== */
+const grid = document.getElementById("grid");
+const filters = document.getElementById("filters");
+let activeBrand = "All";
+
+function renderFilters(){
+  const brands = ["All", ...new Set(PRODUCTS.map(p => p.brand))];
+  filters.innerHTML = brands.map(b =>
+    `<button class="fbtn${b===activeBrand?" on":""}" data-brand="${b}">${b}</button>`
+  ).join("");
+}
+filters.addEventListener("click", e => {
+  const btn = e.target.closest(".fbtn");
+  if (!btn) return;
+  activeBrand = btn.dataset.brand;
+  renderFilters(); renderGrid();
+});
+
+function renderGrid(){
+  const list = activeBrand === "All" ? PRODUCTS : PRODUCTS.filter(p => p.brand === activeBrand);
+  grid.innerHTML = list.map(p => `
+    <article class="item">
+      ${watchSVG(p)}
+      <div class="brand">${p.brand}</div>
+      <h2 class="model">${p.model}</h2>
+      <div class="ref">Ref. ${p.ref}</div>
+      <div class="price">${money(p.price)}</div>
+      <button class="add" data-id="${p.id}">Add to Cart</button>
+    </article>
+  `).join("");
+}
+
+/* =====================================================
+   CART — held in memory for the visit.
+   ===================================================== */
+const cart = {}; // { productId: quantity }
+
+const countEl = document.getElementById("count");
+const cartBody = document.getElementById("cartBody");
+const subtotalEl = document.getElementById("subtotal");
+const checkoutBtn = document.getElementById("checkoutBtn");
+
+const cartCount = () => Object.values(cart).reduce((s,q)=>s+q,0);
+const cartTotal = () => Object.entries(cart)
+  .reduce((s,[id,q]) => s + PRODUCTS.find(p=>p.id===id).price * q, 0);
+
+function renderCart(){
+  const ids = Object.keys(cart);
+  if (!ids.length){
+    cartBody.innerHTML = `<div class="cart-empty">The case is empty.<br/>Choose a reference.</div>`;
+  } else {
+    cartBody.innerHTML = ids.map(id => {
+      const p = PRODUCTS.find(x => x.id === id);
+      const q = cart[id];
+      return `
+      <div class="line-item">
+        <div>
+          <div class="li-name">${p.brand} ${p.model}</div>
+          <div class="li-ref">Ref. ${p.ref}</div>
+          <div class="li-price">${money(p.price)} each</div>
+          <div class="qty">
+            <button data-act="dec" data-id="${id}" aria-label="Decrease quantity">−</button>
+            <span>${q}</span>
+            <button data-act="inc" data-id="${id}" aria-label="Increase quantity">+</button>
+          </div>
+          <button class="remove" data-act="remove" data-id="${id}">Remove</button>
+        </div>
+        <div class="li-amt">${money(p.price * q)}</div>
+      </div>`;
+    }).join("");
+  }
+  subtotalEl.textContent = money(cartTotal());
+  countEl.textContent = cartCount();
+  checkoutBtn.disabled = !ids.length;
+}
+
+/* add-to-cart */
+grid.addEventListener("click", e => {
+  const btn = e.target.closest(".add");
+  if (!btn) return;
+  const id = btn.dataset.id;
+  cart[id] = (cart[id] || 0) + 1;
+  renderCart();
+  btn.classList.add("done"); btn.textContent = "Added";
+  setTimeout(() => { btn.classList.remove("done"); btn.textContent = "Add to Cart"; }, 1200);
+});
+
+/* qty / remove */
+cartBody.addEventListener("click", e => {
+  const btn = e.target.closest("button[data-act]");
+  if (!btn) return;
+  const { act, id } = btn.dataset;
+  if (act === "inc") cart[id]++;
+  if (act === "dec") { cart[id]--; if (cart[id] <= 0) delete cart[id]; }
+  if (act === "remove") delete cart[id];
+  renderCart();
+});
+
+/* ---------- drawer open/close ---------- */
+const drawer = document.getElementById("drawer");
+const overlay = document.getElementById("overlay");
+const openCart  = () => { drawer.classList.add("open"); overlay.classList.add("open"); };
+const closeCart = () => { drawer.classList.remove("open"); overlay.classList.remove("open"); };
+document.getElementById("cartOpen").addEventListener("click", openCart);
+document.getElementById("cartClose").addEventListener("click", closeCart);
+overlay.addEventListener("click", closeCart);
+window.addEventListener("keydown", e => { if (e.key === "Escape"){ closeCart(); closeModal(); } });
+
+/* ---------- checkout ---------- */
+const modalWrap = document.getElementById("modalWrap");
+const modal = document.getElementById("modal");
+const closeModal = () => modalWrap.classList.remove("open");
+
+checkoutBtn.addEventListener("click", () => {
+  const lines = Object.entries(cart).map(([id,q]) => {
+    const p = PRODUCTS.find(x => x.id === id);
+    return `<div class="sum-line"><span>${q} × ${p.brand} ${p.model}</span><span>${money(p.price*q)}</span></div>`;
+  }).join("");
+  modal.innerHTML = `
+    <h3>Order Summary</h3>
+    ${lines}
+    <div class="sum-total"><span>Total</span><span>${money(cartTotal())}</span></div>
+    <button class="checkout" id="placeOrder">Place Demo Order</button>
+    <button class="ghost" id="backBtn">Keep Browsing</button>`;
+  modalWrap.classList.add("open");
+  document.getElementById("placeOrder").addEventListener("click", () => {
+    modal.innerHTML = `
+      <div class="success">
+        <div class="mark">✓</div>
+        <h3>Order Confirmed</h3>
+        <p>Demo only — nothing was charged, nothing ships.<br/>The cart has been emptied for the next visitor.</p>
+        <button class="ghost" id="doneBtn" style="margin-top:20px">Back to the Case</button>
+      </div>`;
+    Object.keys(cart).forEach(k => delete cart[k]);
+    renderCart(); closeCart();
+    document.getElementById("doneBtn").addEventListener("click", closeModal);
+  });
+  document.getElementById("backBtn").addEventListener("click", closeModal);
+});
+modalWrap.addEventListener("click", e => { if (e.target === modalWrap) closeModal(); });
+
+/* =====================================================
+   THE SIGNATURE: every watch runs on the real time.
+   Smooth sweep like an automatic; one loop drives all.
+   ===================================================== */
+const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function setHands(){
+  const now = new Date();
+  const s = now.getSeconds() + (reduced ? 0 : now.getMilliseconds()/1000);
+  const m = now.getMinutes() + s/60;
+  const h = (now.getHours() % 12) + m/60;
+  const rot = (sel, deg) => document.querySelectorAll(sel).forEach(el =>
+    el.setAttribute("transform", `rotate(${deg} ${el.dataset.c})`));
+  rot(".s-hand", s * 6);
+  rot(".m-hand", m * 6);
+  rot(".h-hand", h * 30);
+}
+if (reduced){
+  setHands(); setInterval(setHands, 1000);
+} else {
+  (function tick(){ setHands(); requestAnimationFrame(tick); })();
+}
+
+/* boot */
+renderFilters();
+renderGrid();
+renderCart();
+</script>
+</body>
+</html>
